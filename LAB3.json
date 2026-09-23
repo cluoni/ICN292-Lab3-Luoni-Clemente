@@ -1,0 +1,743 @@
+{
+  "name": "LAB3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lab3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        80
+      ],
+      "id": "5230997c-dc3f-45af-9f17-faab5a1b85e5",
+      "name": "Webhook",
+      "webhookId": "cf3d3717-4fd4-4970-a7fa-6e31f5d21ff5"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.body.id_solicitud}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    },
+                    "id": "bc84ecbd-c039-4c2a-9362-78d07b0f6d96"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "INVALIDO_CAMPO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1bbedf15-5950-41a4-ac8e-f636f1702843",
+                    "leftValue": "={{ $json.body.monto.toNumber() }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "INVALIDO_MONTO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b26fe252-2bb3-40db-881f-f3dc26ab96c2",
+                    "leftValue": "={{ $json.body.dias_desde_compra.toNumber() }}",
+                    "rightValue": 7,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "RECHAZO_PLAZO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "725f65f0-ee74-4d2b-afab-1700337332ce",
+                    "leftValue": "={{ $json.body.estado_producto }}",
+                    "rightValue": "danado_por_uso",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "RECHAZO_ESTADO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b43b0ea4-6adf-47eb-b258-f2c181bd9788",
+                    "leftValue": "={{ $json.body.monto.toNumber() }}",
+                    "rightValue": 70000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "REVISION_MONTO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "81fb05ab-9735-4824-a3da-ff1e2dcf6b08",
+                    "leftValue": "={{ $json.body.estado_producto }}",
+                    "rightValue": "con_fallas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "REVISION_FALLA"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "91c26aa0-2fd8-4ff7-8375-70858b3cfc44",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63fc3225-1ca1-48e6-b2d2-10eb1543bed1",
+              "name": "ruta",
+              "value": "={{ !$json.body.id_solicitud ? \"INVALIDO_CAMPO\" : \"INVALIDO_MONTO\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b78d7b43-8c61-4643-b576-70f0e09646f7",
+              "name": "motivo",
+              "value": "={{ !$json.body.id_solicitud ? \"Falta id_solicitud\" : \"El monto debe ser mayor que 0\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "5a5b87ef-45f1-4b93-a767-d202f6fbf189",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7234b58c-f944-4b59-bc74-f3c92be17ec3",
+              "name": "ruta",
+              "value": "={{ $json.body.dias_desde_compra.toNumber() > 7 ? \"RECHAZO_PLAZO\" : \"RECHAZO_ESTADO\" }}",
+              "type": "string"
+            },
+            {
+              "id": "0eb42156-b00b-411f-a6c5-d965b17cf23c",
+              "name": "motivo",
+              "value": "={{ $json.body.dias_desde_compra.toNumber() > 7 ? \"Solicitud fuera del plazo permitido\" : \"Producto dañado por uso\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        576,
+        -16
+      ],
+      "id": "fd1a2a85-14f4-40fa-9d68-cbc23cc3fd94",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "22864ccd-3401-4394-af1d-ab5c8f4d9506",
+              "name": "ruta",
+              "value": "={{ $json.body.monto.toNumber() > 70000 ? \"REVISION_MONTO\" : \"REVISION_FALLA\" }}",
+              "type": "string"
+            },
+            {
+              "id": "fb888aad-4145-4114-b50f-72244f178c7a",
+              "name": "motivo",
+              "value": "={{ $json.body.monto.toNumber() > 70000 ? \"Monto supera el umbral permitido\" : \"Producto presenta fallas\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        576,
+        128
+      ],
+      "id": "d43835ea-edff-4e81-92d6-f61241314dca",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4fd4f6ec-3f72-4101-8cf7-4a2adb71909f",
+              "name": "ruta",
+              "value": "APROBACION",
+              "type": "string"
+            },
+            {
+              "id": "e05b949c-e9da-4058-9f6c-b94eddaa6b19",
+              "name": "motivo",
+              "value": "Solicitud cumple criterios de aprobacion",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        576,
+        272
+      ],
+      "id": "eaa2926e-ea42-4131-ae78-daff42fe9fe5",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2400,
+        16
+      ],
+      "id": "8ee6c724-0e4b-4657-b0bf-7f0b9496bc27",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "https://mindicador.cl/api",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1072,
+        272
+      ],
+      "id": "108803c1-5c51-4646-9761-9d067a7cabbb",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ee697a0f-3597-43da-85ea-f8088212fbde",
+              "name": "uf_valor",
+              "value": "={{ $json.uf.valor }}",
+              "type": "string"
+            },
+            {
+              "id": "6e9382f7-2db2-48da-9893-b963cfec32f2",
+              "name": "motivo",
+              "value": "={{ $json.motivo }}",
+              "type": "string"
+            },
+            {
+              "id": "f1acc64c-d8dd-47d1-bfc2-430a89d284f1",
+              "name": "ruta",
+              "value": "={{ $json.ruta }}",
+              "type": "string"
+            },
+            {
+              "id": "59de7c5a-2373-41f0-b25b-c1b718bffaa7",
+              "name": "monto",
+              "value": "={{ $('Webhook').item.json.body.monto }}\n",
+              "type": "string"
+            },
+            {
+              "id": "3369983c-72aa-4eaa-ba24-b53c122fbd07",
+              "name": "sku",
+              "value": "={{ $('Webhook').item.json.body.sku }}",
+              "type": "string"
+            },
+            {
+              "id": "72e5722a-d0d0-4b47-8349-0d5294410f22",
+              "name": "id_solicitud",
+              "value": "={{ $('Webhook').item.json.body.id_solicitud }}",
+              "type": "string"
+            },
+            {
+              "id": "dd3fe202-7b63-4666-98b9-6b083e7c4d12",
+              "name": "U",
+              "value": "=70000",
+              "type": "string"
+            },
+            {
+              "id": "40da7675-6bba-48e5-9451-e53e1b11adf5",
+              "name": "D",
+              "value": "=7",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1744,
+        32
+      ],
+      "id": "5b61a0e1-e06d-4ada-886f-270b411436a2",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1312,
+        16
+      ],
+      "id": "4407c848-b464-4cc0-9e01-0d9de2423b3c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "9pPuSKOsvSvoGrDW",
+          "mode": "list",
+          "cachedResultName": "registro_solicitudes",
+          "cachedResultUrl": "/projects/KPPTl2HCbY6kDGOx/datatables/9pPuSKOsvSvoGrDW"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sku": "={{ $json.sku }}",
+            "monto": "={{ $json.monto }}\n",
+            "ruta": "={{ $json.ruta }}",
+            "motivo": "={{ $json.motivo }}",
+            "U": "={{ $json.U }}",
+            "D": "={{ $json.D }}",
+            "id_solicitud": "={{ $json.id_solicitud }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_solicitud",
+              "displayName": "id_solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "sku",
+              "displayName": "sku",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "monto",
+              "displayName": "monto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ruta",
+              "displayName": "ruta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "U",
+              "displayName": "U",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "D",
+              "displayName": "D",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1968,
+        32
+      ],
+      "id": "4d530409-989e-4c2b-a267-79dc0c22cedf",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2176,
+        32
+      ],
+      "id": "80da1fe3-530e-450d-8c12-6e84064755c8",
+      "name": "Send an Email",
+      "webhookId": "6cc2172e-6134-4e29-a1d3-e692d6e20711",
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5cc2f1f9-ec93-4814-957a-60b7835e425c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f5d2e9c4a2d259246106c6fb0da4c07d8818da3c758e5a91843d0de856099d67"
+  },
+  "nodeGroups": [],
+  "id": "CYT5083dquGPohZj",
+  "tags": []
+}
