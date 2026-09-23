@@ -22,6 +22,8 @@ Este workflow toma todas las solicitudes diarias y genera un resumen funcional.
 **Informe PDF**
 Es el informe final del laboratorio con el desarrollo y los resultados de lo realizado.
 
+## Reproducción ##
+Para reproducir el archivo .json de lab3emisor, es necesario añadir un cuerpo de .json ya que este fue dejado en vacio itencionalmente para que no reproduzca una solicitud cualquiera al instante.
 **Informe word**
 Lo mismo que lo anterior pero en caracter editable.
 
