@@ -2,7 +2,9 @@
 ## Datos
 Nombre: Clemente Agustin Luoni Ortega
 
-Rut: 21.830.240-8
+Rut(sin DV): 21.830.240
+
+S = 240
 
 Fecha: 23/09/2026
 ## Informacion del Laboratorio
